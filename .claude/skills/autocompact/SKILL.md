@@ -97,14 +97,14 @@ Treat compression as information extraction, not summarization. Apply the six-se
 Estimate the token count of the drafted snapshot. If > 500: warn the user with the actual count and recommend Claude's native compact. Do not write. Exit. If ≤ 500: proceed.
 
 **Step 15 — Write snapshot**
-Check whether `/compacted/` exists in the working repo. If not, create it. Count existing `.md` files with today's date prefix to determine N (1 if none). Write the snapshot to `/compacted/<YYYY-MM-DD>-N.md`. Confirm written.
+Check whether `/compacted/` exists in the working repo. If not, create it. Obtain today's date by running: date +%Y-%m-%d. Use the shell output as the date prefix — do not infer it from conversation context or system messages. Count existing `.md` files with today's date prefix to determine N (1 if none). Write the snapshot to `/compacted/<YYYY-MM-DD>-N.md`. Confirm written.
 
 **Step 16 (Auto only) — Signal ready**
 Emit one line: "Done. Ready to clear and load."
 
 ## Auto mode — hook setup
 
-Auto mode requires a Stop hook in `~/.claude/settings.json`. The hook runs `scripts/check-and-fire.sh` after every Claude response. The script estimates context usage from the session transcript and injects a notification when the threshold is hit. Claude sees the notification and invokes `/autocompact` before answering the next message.
+Auto mode requires a Stop hook in `~/.claude/settings.json`. The hook runs `scripts/check-and-fire.sh` after every Claude response. The script reads the actual context occupancy from the session transcript and injects a notification when the threshold is hit. Claude sees the notification and invokes `/autocompact` before answering the next message.
 
 Add to `~/.claude/settings.json`:
 
@@ -128,9 +128,9 @@ Add to `~/.claude/settings.json`:
 
 **Token cost of the hook:** zero — the shell script runs outside Claude's context. Tokens are only used when `/autocompact` fires.
 
-**Context estimation:** the script estimates usage from transcript character count (~4 chars/token against a 200k token baseline). This is an approximation; the hook may fire slightly early or late relative to the exact threshold.
+**Context estimation:** the script reads the true context occupancy from the last API response in the transcript JSONL (`.message.usage`), summing `input_tokens + cache_read_input_tokens + cache_creation_input_tokens` against a 200k token baseline. The cache fields are essential — with prompt caching, `input_tokens` alone is near-zero because most context is served from cache. If a transcript has no usage data, the script falls back to a coarse character-count heuristic (~4 chars/token), which may fire slightly early or late.
 
 ## References
 
 - `refs/snapshot-schema.md` — six-section schema definition with per-section contracts, extraction rules, and example output
-- `scripts/check-and-fire.sh` — Stop hook script; estimates context usage and injects autocompact notification when threshold is hit
+- `scripts/check-and-fire.sh` — Stop hook script; reads true context occupancy from the transcript and injects autocompact notification when threshold is hit

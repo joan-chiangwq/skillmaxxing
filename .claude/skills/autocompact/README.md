@@ -121,7 +121,7 @@ Auto mode uses a Stop hook — a shell script that runs after every Claude respo
 - **Compact cost:** ~1,000–2,000 tokens per firing (same as running `/autocompact` manually)
 - **Threshold config:** stored globally at `~/.claude/skills/autocompact/config.json` — applies across all repos
 
-Context estimation uses transcript character count (~4 chars/token against a 200k baseline). The hook may fire slightly early or late relative to the exact threshold.
+Context measurement reads the true token occupancy reported by the API in the transcript (`input_tokens + cache_read_input_tokens + cache_creation_input_tokens`) against a 200k baseline. It falls back to a coarse character-count heuristic (~4 chars/token) only when a transcript has no usage data.
 
 ---
 

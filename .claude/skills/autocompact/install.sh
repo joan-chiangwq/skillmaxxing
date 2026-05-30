@@ -68,26 +68,52 @@ if [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/SKILL.md" ]; then
     USE_LOCAL=true
 fi
 
-download_file() {
-    local remote_path="$1"
-    local dest="$2"
-    if [ "$USE_LOCAL" = true ]; then
-        cp "$SCRIPT_DIR/$remote_path" "$dest"
-    else
-        curl -fsSL "$RAW/$remote_path" -o "$dest"
-    fi
-}
+# Complete file manifest — used for REMOTE installs, where raw URLs cannot list
+# a directory. Keep this in sync when adding skill files. Local installs mirror
+# the whole directory via find (below), so they pick up new files automatically.
+MANIFEST=(
+    "SKILL.md"
+    "README.md"
+    "refs/snapshot-schema.md"
+    "scripts/check-and-fire.sh"
+    "install.sh"
+    "uninstall.sh"
+)
 
 # ── 3. Install skill files ────────────────────────────────────────────────────
 mkdir -p "$INSTALL_DIR/refs"
 mkdir -p "$INSTALL_DIR/scripts"
 
-download_file "SKILL.md"                      "$INSTALL_DIR/SKILL.md"
-download_file "refs/snapshot-schema.md"       "$INSTALL_DIR/refs/snapshot-schema.md"
-download_file "scripts/check-and-fire.sh"     "$INSTALL_DIR/scripts/check-and-fire.sh"
-chmod +x "$INSTALL_DIR/scripts/check-and-fire.sh"
+COUNT=0
+if [ "$USE_LOCAL" = true ]; then
+    # Mirror every file under the skill dir, preserving subdirectories. This
+    # guarantees a complete reinstall even if new files were added to the skill.
+    # config.json (the user's threshold) lives only in INSTALL_DIR and is never
+    # in the source, so it is preserved.
+    while IFS= read -r -d '' src; do
+        rel="${src#"$SCRIPT_DIR"/}"
+        dest="$INSTALL_DIR/$rel"
+        mkdir -p "$(dirname "$dest")"
+        if [ "$src" != "$dest" ]; then
+            cp "$src" "$dest"
+        fi
+        COUNT=$((COUNT + 1))
+    done < <(find "$SCRIPT_DIR" -type f -print0)
+else
+    for rel in "${MANIFEST[@]}"; do
+        dest="$INSTALL_DIR/$rel"
+        mkdir -p "$(dirname "$dest")"
+        curl -fsSL "$RAW/$rel" -o "$dest"
+        COUNT=$((COUNT + 1))
+    done
+fi
 
-ok "Skill files installed → $INSTALL_DIR"
+# Ensure shell entrypoints stay executable
+chmod +x "$INSTALL_DIR/scripts/check-and-fire.sh" 2>/dev/null || true
+[ -f "$INSTALL_DIR/install.sh" ]   && chmod +x "$INSTALL_DIR/install.sh"   || true
+[ -f "$INSTALL_DIR/uninstall.sh" ] && chmod +x "$INSTALL_DIR/uninstall.sh" || true
+
+ok "Skill files installed ($COUNT files) → $INSTALL_DIR"
 
 # ── 4. Wire Stop hook into ~/.claude/settings.json ───────────────────────────
 mkdir -p "$(dirname "$SETTINGS_FILE")"
