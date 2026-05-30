@@ -52,9 +52,9 @@ Run `/autocompact` once in Claude Code. You will be prompted to set your context
 | `/autocompact` | Compress context now (Manual mode) |
 | `/autocompact --load` | Load the latest snapshot and resume session |
 | `/autocompact --load-select` | Choose which snapshot to load from a numbered list |
-| `/autocompact --change-threshold` | Update the auto-compact context threshold |
+| `/autocompact --change-config` | Update threshold and context window size |
 
-Auto mode fires without any command — when context hits your configured threshold, Claude compacts automatically before answering your next message.
+Auto mode fires without any command — when context hits your configured threshold, Claude writes a snapshot automatically. Run `/clear` then `/autocompact --load` to actually reset the context window.
 
 ---
 
@@ -115,7 +115,9 @@ If the snapshot exceeds 500 tokens, autocompact warns and recommends falling bac
 
 ### Auto mode
 
-Auto mode uses a Stop hook — a shell script that runs after every Claude response at zero token cost. When context estimates exceed your threshold, the hook injects a notification. Claude sees it and compacts before answering your next message.
+Auto mode uses a Stop hook — a shell script that runs after every Claude response at zero token cost. When context exceeds your threshold, the hook **blocks the stop** and returns `{"decision":"block","reason":...}`; Claude Code feeds the reason back to the model, so Claude invokes autocompact and writes a snapshot before stopping. (A Stop hook's plain stdout is invisible to the model — `decision: block` is the only channel that reaches Claude.)
+
+Writing a snapshot captures your context to disk; it does not shrink the live window. To actually reduce context, run `/clear` then `/autocompact --load`. The hook fires **once per high-water episode** — it never re-fires while `stop_hook_active` is set, a per-session marker suppresses repeats, and it re-arms once context drops back below threshold (e.g. after `/clear`). No nested loop.
 
 - **Hook cost:** zero tokens (runs outside Claude's context)
 - **Compact cost:** ~1,000–2,000 tokens per firing (same as running `/autocompact` manually)
