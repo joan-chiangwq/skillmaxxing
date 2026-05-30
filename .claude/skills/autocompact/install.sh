@@ -42,13 +42,14 @@ for cmd in curl jq; do
         echo ""
         case "$cmd" in
             jq)
-                echo "  Install jq:"
+                echo "  Install jq for your platform:"
                 echo "    macOS:           brew install jq"
                 echo "    Linux (apt):     sudo apt-get install jq"
                 echo "    Linux (dnf):     sudo dnf install jq"
                 echo "    Windows winget:  winget install jqlang.jq"
                 echo "    Windows choco:   choco install jq"
                 echo "    Windows scoop:   scoop install jq"
+                echo "    All platforms:   https://jqlang.org/download/"
                 ;;
             curl)
                 echo "  Install curl via your system package manager."

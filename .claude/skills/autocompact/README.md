@@ -8,19 +8,7 @@ Native compact treats compression as summarization and produces prose averaging 
 
 ## Installation
 
-### Option 1 — Homebrew (macOS)
-
-```bash
-brew install joan-chiangwq/skillmaxxing/autocompact
-```
-
-Installs the skill and wires the auto mode hook automatically. To update:
-
-```bash
-brew upgrade autocompact
-```
-
-### Option 2 — Install script (macOS / Linux / Windows WSL)
+### Option 1 — Install script (macOS / Linux / Windows WSL)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/joan-chiangwq/skillmaxxing/main/.claude/skills/autocompact/install.sh | bash
@@ -41,7 +29,7 @@ Downloads all skill files to `~/.claude/skills/autocompact/` and wires the Stop 
 
 > **Windows:** run from Git Bash, WSL, or MSYS2. The auto mode hook also requires bash — Claude Code on Windows uses Git Bash or WSL to run hook scripts.
 
-### Option 3 — Clone the repo
+### Option 2 — Clone the repo
 
 ```bash
 git clone --branch main --single-branch https://github.com/joan-chiangwq/skillmaxxing.git
@@ -191,9 +179,7 @@ autocompact/
 ## Uninstall
 
 ```bash
-# Remove skill files
-rm -rf ~/.claude/skills/autocompact/
-
-# Remove the Stop hook from ~/.claude/settings.json
-# Edit the file and delete the check-and-fire.sh hook entry
+curl -fsSL https://raw.githubusercontent.com/joan-chiangwq/skillmaxxing/main/.claude/skills/autocompact/uninstall.sh | bash
 ```
+
+Removes `~/.claude/skills/autocompact/` and cleans the Stop hook out of `~/.claude/settings.json` automatically. Snapshots already saved in your repos' `/compacted/` folders are not deleted.
