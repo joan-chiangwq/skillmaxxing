@@ -1,0 +1,12 @@
+# Test artifacts from skill evaluation runs
+.claude/skills/*/run/
+.claude/skills/*/refs/schemas.json
+
+# Snapshot files created during testing
+compacted/
+
+# Agentlinter output files
+*.jsonl
+
+# Personal Claude Code local settings (not for sharing)
+.claude/settings.local.json
