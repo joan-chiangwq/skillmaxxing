@@ -122,11 +122,11 @@ If no project-scoped messages are found after filtering, SlackBack refuses to dr
 ## Example flow
 
 ```
-User:  /slackback Sandy Wong, Jan 1 2026 to Jun 6 2026
+User:  /slackback Marcus Lee, Jan 1 2026 to Jun 6 2026
 
 SlackBack: Usage: /slackback <colleague name>, <start date> to <end date>
 
-           Inputs confirmed — Sandy Wong, Jan 1 2026 to Jun 6 2026.
+           Inputs confirmed — Marcus Lee, Jan 1 2026 to Jun 6 2026.
            Searching Slack...
 
            [Retrieves DMs and qualifying channel threads]
@@ -149,7 +149,7 @@ SlackBack: Usage: /slackback <colleague name>, <start date> to <end date>
            ...
 
            ## 360 Review Draft
-           Working with Sandy Wong on the HK Tiered Deals experiment...
+           Working with Marcus Lee on the XXX experiment...
 ```
 
 ---
