@@ -7,7 +7,7 @@ A collection of Claude Code skills.
 | Skill | Description | Install |
 |-------|-------------|---------|
 | [autocompact](.claude/skills/autocompact/) | Token-efficient context compression — 4–5× smaller than native compact | `curl -fsSL https://raw.githubusercontent.com/joan-chiangwq/skillmaxxing/main/.claude/skills/autocompact/install.sh \| bash` |
-| [slackback](.claude/skills/slackback/) | Evidence-based 360 peer review drafts from Slack history | `curl -fsSL https://raw.githubusercontent.com/joan-chiangwq/skillmaxxing/main/.claude/skills/slackback/install.sh \| bash` |
+| [pd-slackback](.claude/skills/pd-slackback/) | Evidence-based 360 peer review drafts from Slack history | `curl -fsSL https://raw.githubusercontent.com/joan-chiangwq/skillmaxxing/main/.claude/skills/pd-slackback/install.sh \| bash` |
 
 ## Using this repo
 
